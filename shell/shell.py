@@ -61,6 +61,10 @@ def execute_process(process):
         l_proc = args[:p_index]
         r_proc = args[p_index+1:]
 
+        if not l_proc or not r_proc:
+            print("Syntax error: missing command before or after '|'")
+            return
+
         read_fd, write_fd = os.pipe()
 
         #left process
@@ -74,7 +78,7 @@ def execute_process(process):
             full_path = find_path(l_proc[0])
             if full_path is None:
                 print(f"{l_proc[0]}: command not found")
-                os._exit(0)
+                os._exit(1)
             os.execve(full_path, l_proc, os.environ)
 
         # right process
@@ -88,7 +92,7 @@ def execute_process(process):
             full_path = find_path(r_proc[0])
             if full_path is None:
                 print(f"{r_proc[0]}: command not found")
-                os._exit(0)
+                os._exit(1)
             os.execve(full_path, r_proc, os.environ)
 
         #back to parent process
@@ -124,16 +128,19 @@ def execute_process(process):
 def main():
     PS1 = os.getenv("PS1", "$ ")
     while True:
-        command = input(PS1).strip()
-        args = command.split()
+        try:
+            command = input(PS1).strip()
+            args = command.split()
         
-        if command.lower() == "exit":
-            print("Exiting shell")
-            break
-        if not command:
-            continue
-        execute_process(command)
-        
+            if command.lower() == "exit":
+                print("Exiting shell")
+                break
+            if not command:
+                continue
+            execute_process(command)
+        except EOFError:
+            print("\nExiting shell")
+            exit(0)
 
 if __name__ == "__main__":
         main()
