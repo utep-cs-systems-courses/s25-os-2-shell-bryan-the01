@@ -71,7 +71,7 @@ def execute_process(process):
             os.close(write_fd)
             #close left child fd
             
-            full_path = find_path(left_command[0])
+            full_path = find_path(l_proc[0])
             if full_path is None:
                 print(f"{l_proc[0]}: command not found")
                 os._exit(0)
@@ -85,7 +85,7 @@ def execute_process(process):
             os.close(read_fd)
             #right child closes fd
             
-            full_path = find_path(right_command[0])
+            full_path = find_path(r_proc[0])
             if full_path is None:
                 print(f"{r_proc[0]}: command not found")
                 os._exit(0)
