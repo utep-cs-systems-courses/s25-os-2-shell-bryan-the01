@@ -117,7 +117,7 @@ def execute_process(process):
                 os.dup2(fd_out, 1)
                 os.close(fd_out)
                 
-            os.execve(full_path, args, os.environ)
+            os.execve(full_path, new_args, os.environ)
         except FileNotFoundError:
             print(f"{args[0]}: Invalid command")
         os._exit(1)
@@ -140,7 +140,7 @@ def main():
             execute_process(command)
         except EOFError:
             print("\nExiting shell")
-            exit(0)
+            os._exit(0)
 
 if __name__ == "__main__":
         main()
