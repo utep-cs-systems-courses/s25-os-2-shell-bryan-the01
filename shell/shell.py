@@ -15,6 +15,13 @@ def execute_process(process):
     args = process.split()
     if not args:
         return
+
+    # Detect backgroun process
+    bg = False
+    if args[-1] == "&":
+        bg = True
+        args = args[:-1]
+    
     #Built-in command
     if args[0] == "cd":
         try:
@@ -47,13 +54,6 @@ def execute_process(process):
             new_args.append(args[i])
         i += 1
 
-    
-    full_path = find_path(new_args[0])
-    if full_path is None:
-        print(f"{new_args[0]}: command not found")
-        return
-    
-    pid = os.fork()
 
     # Pipe process
     if "|" in args:
@@ -101,6 +101,13 @@ def execute_process(process):
         os.waitpid(pid1, 0)
         os.waitpid(pid2, 0)
         return
+
+
+    full_path = find_path(new_args[0])
+    if full_path is None:
+        print(f"{new_args[0]}: command not found")
+        return
+    pid = os.fork()
     
     #Child process
     if pid == 0:
@@ -122,8 +129,10 @@ def execute_process(process):
             print(f"{args[0]}: Invalid command")
         os._exit(1)
     #Parent process
-    else:
+    if bg == False:
         os.waitpid(pid, 0)
+    else:
+        print("Starting backgroun process for PID {pid}")
 
 def main():
     PS1 = os.getenv("PS1", "$ ")
