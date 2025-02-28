@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 import os
 import sys
 import re
@@ -130,9 +130,13 @@ def execute_process(process):
         os._exit(1)
     #Parent process
     if bg == False:
-        os.waitpid(pid, 0)
-    else:
-        print("Starting backgroun process for PID {pid}")
+        pid, status = os.waitpid(pid, 0)
+        exit_code = os.WEXITSTATUS(status)
+        
+        if exit_code != 0:
+            print(f"PID {pid} exited with status code {exit_code}")
+#    else:
+#        print(f"{pid}")
 
 def main():
     PS1 = os.getenv("PS1", "$ ")
